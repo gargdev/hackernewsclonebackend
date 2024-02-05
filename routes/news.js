@@ -39,15 +39,15 @@ router.patch('/:id/delete', async (req, res) => {
 });
 
 
-app.patch('/api/news/:id/delete', async (req, res) => {
-  try {
-    const newsItem = await NewsItem.findById(req.params.id);
-    newsItem.deleted = true; // Mark as deleted
-    await newsItem.save();
-    res.json(newsItem);
-  } catch (err) {
-    res.status(404).json({ message: 'News item not found' });
-  }
-});
+// app.patch('/api/news/:id/delete', async (req, res) => {
+//   try {
+//     const newsItem = await NewsItem.findById(req.params.id);
+//     newsItem.deleted = true; // Mark as deleted
+//     await newsItem.save();
+//     res.json(newsItem);
+//   } catch (err) {
+//     res.status(404).json({ message: 'News item not found' });
+//   }
+// });
 
 module.exports = router;
