@@ -2,44 +2,51 @@
 
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
 const NewsItem = require('../models/NewsItem');
 
 // Get all news items
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const newsItems = await NewsItem.find().sort({ postedOn: -1 });
+    const newsItems = await NewsItem.find();
     res.json(newsItems);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: err.message });
   }
 });
 
 // Mark a news item as read
-router.put('/:id/read', auth, async (req, res) => {
+router.patch('/:id/read', async (req, res) => {
   try {
-    let newsItem = await NewsItem.findById(req.params.id);
-    if (!newsItem) {
-      return res.status(404).json({ msg: 'News Item not found' });
-    }
+    const newsItem = await NewsItem.findById(req.params.id);
     newsItem.read = true;
     await newsItem.save();
     res.json(newsItem);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(404).json({ message: 'News item not found' });
   }
 });
 
-// Delete a news item from user's dashboard
-router.delete('/:id', auth, async (req, res) => {
+// Mark a news item as deleted
+router.patch('/:id/delete', async (req, res) => {
   try {
-    await NewsItem.findByIdAndRemove(req.params.id);
-    res.json({ msg: 'News Item removed' });
+    const newsItem = await NewsItem.findById(req.params.id);
+    newsItem.deleted = true;
+    await newsItem.save();
+    res.json(newsItem);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(404).json({ message: 'News item not found' });
+  }
+});
+
+
+app.patch('/api/news/:id/delete', async (req, res) => {
+  try {
+    const newsItem = await NewsItem.findById(req.params.id);
+    newsItem.deleted = true; // Mark as deleted
+    await newsItem.save();
+    res.json(newsItem);
+  } catch (err) {
+    res.status(404).json({ message: 'News item not found' });
   }
 });
 
